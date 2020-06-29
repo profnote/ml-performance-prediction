@@ -1,0 +1,123 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 10 files
+Detected 2 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: benchmark\utils_tf\run_benchmark.py
+--------------------------------------------------------------------------------
+benchmark\utils_tf\run_benchmark.py:75:12: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+benchmark\utils_tf\run_benchmark.py:85:27: ERROR: Using member tf.contrib.memory_stats.MaxBytesInUse in deprecated module tf.contrib. tf.contrib.memory_stats.MaxBytesInUse cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+================================================================================
+Detailed log follows:
+
+================================================================================
+================================================================================
+Input tree: 'benchmark'
+================================================================================
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\benchmark.py'
+ outputting to 'bench_tf2\\benchmark.py'
+--------------------------------------------------------------------------------
+
+270:4: INFO: Renamed 'tf.app.run' to 'tf.compat.v1.app.run'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\__init__.py'
+ outputting to 'bench_tf2\\__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\benchmark_conv.py'
+ outputting to 'bench_tf2\\utils_tf\\benchmark_conv.py'
+--------------------------------------------------------------------------------
+
+39:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+50:27: INFO: Renamed 'tf.layers.conv2d' to 'tf.compat.v1.layers.conv2d'
+69:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+87:27: INFO: Renamed keyword argument for tf.nn.conv2d from filter to filters
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\benchmark_conv_mult.py'
+ outputting to 'bench_tf2\\utils_tf\\benchmark_conv_mult.py'
+--------------------------------------------------------------------------------
+
+40:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+53:31: INFO: Renamed 'tf.layers.conv2d' to 'tf.compat.v1.layers.conv2d'
+72:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+91:31: INFO: Renamed keyword argument for tf.nn.conv2d from filter to filters
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\benchmark_matmul.py'
+ outputting to 'bench_tf2\\utils_tf\\benchmark_matmul.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\benchmark_VGG16.py'
+ outputting to 'bench_tf2\\utils_tf\\benchmark_VGG16.py'
+--------------------------------------------------------------------------------
+
+63:19: INFO: tf.losses.softmax_cross_entropy requires manual check. tf.losses have been replaced with object oriented versions in TF 2.0 and after. The loss function calls have been converted to compat.v1 for backward compatibility. Please update these calls to the TF 2.0 versions.
+63:19: INFO: Renamed 'tf.losses.softmax_cross_entropy' to 'tf.compat.v1.losses.softmax_cross_entropy'
+69:22: INFO: Renamed 'tf.train.GradientDescentOptimizer' to 'tf.compat.v1.train.GradientDescentOptimizer'
+71:22: INFO: Renamed 'tf.train.RMSPropOptimizer' to 'tf.compat.v1.train.RMSPropOptimizer'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\benchmark_VGG16_keras.py'
+ outputting to 'bench_tf2\\utils_tf\\benchmark_VGG16_keras.py'
+--------------------------------------------------------------------------------
+
+33:19: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+71:22: INFO: Renamed 'tf.RunOptions' to 'tf.compat.v1.RunOptions'
+71:48: INFO: Renamed 'tf.RunOptions' to 'tf.compat.v1.RunOptions'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\merge_timeline.py'
+ outputting to 'bench_tf2\\utils_tf\\merge_timeline.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\run_benchmark.py'
+ outputting to 'bench_tf2\\utils_tf\\run_benchmark.py'
+--------------------------------------------------------------------------------
+
+27:22: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+28:30: INFO: Renamed 'tf.GraphOptions' to 'tf.compat.v1.GraphOptions'
+29:42: INFO: Renamed 'tf.OptimizerOptions' to 'tf.compat.v1.OptimizerOptions'
+30:42: INFO: Renamed 'tf.OptimizerOptions' to 'tf.compat.v1.OptimizerOptions'
+36:13: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+37:21: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+53:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+54:13: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+55:27: INFO: tf.summary.FileWriter requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+55:27: INFO: Renamed 'tf.summary.FileWriter' to 'tf.compat.v1.summary.FileWriter'
+56:22: INFO: Renamed 'tf.RunOptions' to 'tf.compat.v1.RunOptions'
+56:48: INFO: Renamed 'tf.RunOptions' to 'tf.compat.v1.RunOptions'
+57:21: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+75:12: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+84:13: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+85:27: ERROR: Using member tf.contrib.memory_stats.MaxBytesInUse in deprecated module tf.contrib. tf.contrib.memory_stats.MaxBytesInUse cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'benchmark\\utils_tf\\__init__.py'
+ outputting to 'bench_tf2\\utils_tf\\__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+

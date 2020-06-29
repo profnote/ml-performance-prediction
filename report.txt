@@ -1,0 +1,129 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 7 files
+Detected 4 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: prediction_model\model.py
+--------------------------------------------------------------------------------
+prediction_model\model.py:31:27: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+prediction_model\model.py:173:16: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: prediction_model\Generate_train_data\benchmark.py
+--------------------------------------------------------------------------------
+prediction_model\Generate_train_data\benchmark.py:195:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+prediction_model\Generate_train_data\benchmark.py:281:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+================================================================================
+Detailed log follows:
+
+================================================================================
+================================================================================
+Input tree: 'prediction_model'
+================================================================================
+--------------------------------------------------------------------------------
+Processing file 'prediction_model\\dataprep.py'
+ outputting to 'prediction_model_tf2\\dataprep.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'prediction_model\\model.py'
+ outputting to 'prediction_model_tf2\\model.py'
+--------------------------------------------------------------------------------
+
+27:26: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+31:27: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+31:27: INFO: Renamed 'tf.get_variable' to 'tf.compat.v1.get_variable'
+48:21: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+49:30: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+53:49: INFO: Multiplying scale arg of tf.contrib.layers.l2_regularizer by half to what tf.keras.regularizers.l2 expects.
+
+57:22: INFO: Renamed 'tf.layers.dropout' to 'tf.compat.v1.layers.dropout'
+62:21: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+76:26: INFO: tf.losses.get_regularization_loss requires manual check. tf.losses have been replaced with object oriented versions in TF 2.0 and after. The loss function calls have been converted to compat.v1 for backward compatibility. Please update these calls to the TF 2.0 versions.
+76:26: INFO: Renamed 'tf.losses.get_regularization_loss' to 'tf.compat.v1.losses.get_regularization_loss'
+77:27: INFO: tf.losses.mean_squared_error requires manual check. tf.losses have been replaced with object oriented versions in TF 2.0 and after. The loss function calls have been converted to compat.v1 for backward compatibility. Please update these calls to the TF 2.0 versions.
+77:27: INFO: Renamed 'tf.losses.mean_squared_error' to 'tf.compat.v1.losses.mean_squared_error'
+78:38: INFO: Renamed 'tf.log' to 'tf.math.log'
+79:43: INFO: Renamed 'tf.log' to 'tf.math.log'
+92:18: INFO: Renamed 'tf.train.AdamOptimizer' to 'tf.compat.v1.train.AdamOptimizer'
+105:12: INFO: tf.summary.scalar requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+105:12: INFO: Renamed 'tf.summary.scalar' to 'tf.compat.v1.summary.scalar'
+106:12: INFO: tf.summary.scalar requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+106:12: INFO: Renamed 'tf.summary.scalar' to 'tf.compat.v1.summary.scalar'
+107:12: INFO: tf.summary.histogram requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+107:12: INFO: Renamed 'tf.summary.histogram' to 'tf.compat.v1.summary.histogram'
+108:32: INFO: tf.summary.merge_all requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+108:32: INFO: Renamed 'tf.summary.merge_all' to 'tf.compat.v1.summary.merge_all'
+124:16: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+137:13: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+138:21: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+145:27: INFO: tf.summary.FileWriter requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+145:27: INFO: Renamed 'tf.summary.FileWriter' to 'tf.compat.v1.summary.FileWriter'
+146:26: INFO: tf.summary.FileWriter requires manual check. The TF 1.x summary API cannot be automatically migrated to TF 2.0, so symbols have been converted to tf.compat.v1.summary.* and must be migrated manually. Typical usage will only require changes to the summary writing logic, not to individual calls like scalar(). For examples of the new summary API, see the Effective TF 2.0 migration document or check the TF 2.0 TensorBoard tutorials.
+146:26: INFO: Renamed 'tf.summary.FileWriter' to 'tf.compat.v1.summary.FileWriter'
+173:16: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'prediction_model\\__init__.py'
+ outputting to 'prediction_model_tf2\\__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'prediction_model\\Generate_train_data\\benchmark.py'
+ outputting to 'prediction_model_tf2\\Generate_train_data\\benchmark.py'
+--------------------------------------------------------------------------------
+
+195:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+281:8: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+285:4: INFO: Renamed 'tf.app.run' to 'tf.compat.v1.app.run'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'prediction_model\\Generate_train_data\\benchmark_conv.py'
+ outputting to 'prediction_model_tf2\\Generate_train_data\\benchmark_conv.py'
+--------------------------------------------------------------------------------
+
+56:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+67:27: INFO: Renamed 'tf.layers.conv2d' to 'tf.compat.v1.layers.conv2d'
+97:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+117:27: INFO: Renamed 'tf.layers.conv2d' to 'tf.compat.v1.layers.conv2d'
+126:27: INFO: Added keywords to args of function 'tf.reduce_mean'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'prediction_model\\Generate_train_data\\benchmark_dense.py'
+ outputting to 'prediction_model_tf2\\Generate_train_data\\benchmark_dense.py'
+--------------------------------------------------------------------------------
+
+56:28: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+59:47: INFO: tf.ones_initializer requires manual check. Initializers no longer have the dtype argument in the constructor or partition_info argument in the __call__ method.
+The calls have been converted to compat.v1 for safety (even though they may already have been correct).
+59:47: INFO: Renamed 'tf.ones_initializer' to 'tf.compat.v1.ones_initializer'
+78:23: INFO: Renamed 'tf.RunMetadata' to 'tf.compat.v1.RunMetadata'
+92:28: INFO: Renamed 'tf.layers.dense' to 'tf.compat.v1.layers.dense'
+95:47: INFO: tf.ones_initializer requires manual check. Initializers no longer have the dtype argument in the constructor or partition_info argument in the __call__ method.
+The calls have been converted to compat.v1 for safety (even though they may already have been correct).
+95:47: INFO: Renamed 'tf.ones_initializer' to 'tf.compat.v1.ones_initializer'
+98:27: INFO: Added keywords to args of function 'tf.reduce_mean'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file 'prediction_model\\Generate_train_data\\run_benchmark.py'
+ outputting to 'prediction_model_tf2\\Generate_train_data\\run_benchmark.py'
+--------------------------------------------------------------------------------
+
+24:22: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+25:30: INFO: Renamed 'tf.GraphOptions' to 'tf.compat.v1.GraphOptions'
+26:42: INFO: Renamed 'tf.OptimizerOptions' to 'tf.compat.v1.OptimizerOptions'
+27:42: INFO: Renamed 'tf.OptimizerOptions' to 'tf.compat.v1.OptimizerOptions'
+33:13: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+34:21: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+--------------------------------------------------------------------------------
+

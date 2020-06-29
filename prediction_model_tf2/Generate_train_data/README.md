@@ -1,4 +1,4 @@
-Instructions for running benchmark script for Conv in TF2
+##Instructions for running benchmark script for Conv in TF2
 
 1. Create a virtual env/docker container with tensorflow2. (for anaconda prompt, use: conda create -n tf-gpu tensorflow-gpu)
 Be sure to have numpy and pandas installed. If missing, just pip install.

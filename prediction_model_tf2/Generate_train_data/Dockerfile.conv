@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:1.10.1-gpu
+FROM tensorflow/tensorflow:2.2.0-gpu
 
 COPY . /model
 WORKDIR /model
@@ -6,5 +6,5 @@ WORKDIR /model
 ENTRYPOINT ["python", \
             "benchmark.py", \
             "--testConv", \
-            "--num_val=50000", \
+            "--num_val=5", \
             "--num_gpu=1"]

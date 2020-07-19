@@ -72,7 +72,7 @@ class dense_layer(object):
 
         datatype = eval('tf.float%d' %(self.precision))
         act = eval(self.activation_fct)
-        opt = eval('tf.train.%s' % self.opt)
+        opt = eval('tf.compat.v1.train.%s' % self.opt)
 
         g = tf.Graph()
         run_metadata = tf.compat.v1.RunMetadata()

@@ -171,7 +171,7 @@ def main(_):
                     except:
                         print('Error: Out of GPU memory')
                         timeUsed[i,rep] = None
-                        
+  
                     if (i+1)%100==0:
                         print("Iteration %d / %d: Finished convolution %d / %d "
                                 "(%.2f sec): t = %.3f ms \n"

@@ -49,7 +49,6 @@ class dense_layer(object):
         """
         datatype = eval('tf.float%d' %(self.precision))
         act = eval(self.activation_fct)
-        #target_size = int(target_size)
         
         GLOBAL_BATCH_SIZE = self.batchsize
         
@@ -79,10 +78,6 @@ class dense_layer(object):
             if self.backprop:
                 optimizer = eval('tf.compat.v1.train.%s' % self.opt)
 
-        def compute_loss(labels, predictions):
-            per_example_loss = loss_object(labels, predictions)
-            return tf.nn.compute_average_loss(per_example_loss, global_batch_size=GLOBAL_BATCH_SIZE)
-
         def train_step(inputs):
             VecIn, target = inputs
             t = time.time()
@@ -93,12 +88,13 @@ class dense_layer(object):
             gradients = tape.gradient(loss, model.trainable_variables)
             optimizer.apply_gradients(zip(gradients, model.trainable_variables))
             timeUsed = (time.time()-t) *1000
+            
             return timeUsed
 
         def train_step_noBP(inputs):
             VecIn, target = inputs
             t = time.time()
-            predictions = model(VecIn)#, training=True)
+            predictions = model(VecIn)
             timeUsed = (time.time()-t) *1000
             return timeUsed
 

@@ -96,11 +96,7 @@ class convolution(object):
             optimizer = None
             if self.backprop:
                 optimizer = eval('tf.compat.v1.train.%s' % self.opt)
-
-        def compute_loss(labels, predictions):
-            per_example_loss = loss_object(labels, predictions)
-            return tf.nn.compute_average_loss(per_example_loss, global_batch_size=GLOBAL_BATCH_SIZE)
-
+        
         def train_step(inputs):
             images, target = inputs
             t = time.time()
@@ -116,7 +112,7 @@ class convolution(object):
         def train_step_noBP(inputs):
             images, target = inputs
             t = time.time()
-            predictions = model(images)#, training=True)
+            predictions = model(images)
             timeUsed = (time.time()-t) *1000
             return timeUsed
 

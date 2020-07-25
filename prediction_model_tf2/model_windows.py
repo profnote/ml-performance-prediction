@@ -145,7 +145,7 @@ class Model:
                 saver.restore(sess, ckpt.model_checkpoint_path)
 
             writer_train = tf.compat.v1.summary.FileWriter(os.path.join(os.getcwd(), 'graphs','prediction','train','%s' %self.model_name, sess.graph))
-            writer_test = tf.compat.v1.summary.FileWriter(os.path.join(os.getcwd(), 'graphs','prediction','test','%s' %self.model_name, sess.graph)
+            writer_test = tf.compat.v1.summary.FileWriter(os.path.join(os.getcwd(), 'graphs','prediction','test','%s' %self.model_name, sess.graph))
 
             initial_step = self.global_step.eval()
 

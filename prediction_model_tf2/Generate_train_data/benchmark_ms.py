@@ -9,9 +9,8 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 import time
-import benchmark_conv, benchmark_dense
-import run_benchmark
-
+import benchmark_conv_ms, benchmark_dense_ms
+import logging
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 tf.get_logger().setLevel("ERROR") # comment this when debugging
@@ -27,7 +26,7 @@ parser.add_argument('--testConv', action="store_true", default=False,
 # General parameters
 parser.add_argument('--backprop_ratio', type=float, default=0.5,
                     help='ratio of iterations with backward pass ([0..1])')
-parser.add_argument('--num_gpu', type=int, default=1,
+parser.add_argument('--num_gpu', type=int, default=2,
                     help='Number of GPUs to use')
 parser.add_argument('--devlist', type=str, default='',
                     help='List of devices to use, overwrites num_gpu if set')
@@ -37,13 +36,12 @@ parser.add_argument('--logfile', type=str, default='',
                     help='Text file to store results')
 parser.add_argument('--device', type=str, default='',
                     help='Device name as appearing in logfile')
-parser.add_argument('--iter_benchmark', type=int, default=50,
+parser.add_argument('--iter_benchmark', type=int, default=30,
                     help='Number of iterations for benchmark')
 parser.add_argument('--iter_warmup', type=int, default=5,
                     help='Number of iterations for warm-up')
 parser.add_argument('--repetitions', type=int, default=5,
                     help='Number of repetitions of the same experiment')
-
 
 args = parser.parse_args()
 
@@ -93,10 +91,16 @@ def main(_):
             'tf.nn.sigmoid']
 
 
+    strategy = tf.distribute.MirroredStrategy()
+    if devlist != '':
+        strategy = tf.distribute.MirroredStrategy(devlist)
+    print ('Number of devices: {}'.format(strategy.num_replicas_in_sync))
+    print(devlist)
+    
     ########### Benchmark convolution ##########
     if args.testConv:
         if args.logfile == '':
-                logfile = str('results/benchmark_convolution_%s_%s'
+                logfile = str('results/benchmark_ms_conv_%s_%s'
                         %(args.device, time.strftime("%Y%m%d")))
         else:
             logfile = args.logfile
@@ -113,9 +117,6 @@ def main(_):
         padding = np.random.randint(0,2,args.num_val)
         activation_fct = np.random.randint(0,4,args.num_val)
         use_bias = np.random.choice([True,False],args.num_val)
-
-        gpu_index = np.arange(args.num_val)%(len(devlist))
-
         timeUsed = np.zeros([args.num_val,args.repetitions])
 
         tprint = time.time()
@@ -128,11 +129,16 @@ def main(_):
             else:
                 optimizer[i] = 0
         
-        # Run benchmarks
+        # Run benchmarks for TF mirroredStrategy
         for rep in range(args.repetitions):
-            print("Benchmarking convolution, starting repetition %d" %(rep+1))
+            print("Benchmarking convolution (Mirrored Strategy), starting repetition %d" %(rep+1))
+
             for i in range(args.num_val):
-                conv = benchmark_conv.convolution(
+                backprop = True
+                if optimizer[i]==0:
+                    backprop = False
+                    
+                conv = benchmark_conv_ms.convolution(
                         batchsize[i],
                         matsize[i],
                         kernelsize[i],
@@ -143,26 +149,18 @@ def main(_):
                         ('SAME' if padding[i]==1 else 'VALID'),
                         activation_list[activation_fct[i]],
                         use_bias[i],
-                        devlist,
-                        optimizer_list[optimizer[i]])
-
-                if optimizer[i]==0:
-                    benchmark_op, benchmark_graph = conv.create_benchmark_op()
-                else:
-                    benchmark_op, benchmark_graph = conv.create_benchmark_op_with_backprop()
-                bm_conv = run_benchmark.benchmark(
-                        benchmark_op,
+                        optimizer_list[optimizer[i]],
+                        strategy,
                         args.iter_warmup,
                         args.iter_benchmark,
-                        benchmark_graph)
-                
+                        backprop)
                 try:
-                    timeUsed[i,rep] =  bm_conv.run_benchmark()
+                    timeUsed[i,rep] = conv.run_benchmark()
                 except:
                     print('Error: Out of GPU memory')
                     timeUsed[i,rep] = None
 
-                if (i+1)%100==0:
+                if (i+1)%10==0:
                     print("Iteration %d / %d: Finished convolution %d / %d "
                             "(%.2f sec): t = %.3f ms \n"
                             %(rep+1,
@@ -170,12 +168,13 @@ def main(_):
                             i+1,
                             args.num_val,
                             time.time()-tprint,
-                            timeUsed[i,rep]))
+                            timeUsed[i,rep]))     
+          
 
         # Generate dataframe and save results
         print("Generating dataframe and saving results")
         df_results = pd.DataFrame({
-                'batchsize': batchsize,
+                'batchsize': batchsize, # batchsize per replica
                 'matsize': matsize,
                 'kernelsize': kernelsize,
                 'channels_in': channels_in,
@@ -186,12 +185,12 @@ def main(_):
                 'activation_fct': activation_fct,
                 'use_bias': use_bias,
                 'optimizer': optimizer,
-                'gpu': gpu_index,
+                'gpu_count': strategy.num_replicas_in_sync,
                 'timeUsed_median': np.median(timeUsed,1),
                 'timeUsed_min': np.min(timeUsed,1),
                 'timeUsed_max': np.max(timeUsed,1),
                 'timeUsed_std': np.std(timeUsed,1)})
-
+        
         df_results.to_pickle('%s.pkl' %logfile)
         np.save('%s.npy' %logfile, timeUsed)
 
@@ -199,7 +198,7 @@ def main(_):
     ########### Benchmark fully connected layer ##########
     if args.testDense:
         if args.logfile == '':
-                logfile = str('results/benchmark_dense_%s_%s'
+                logfile = str('results/benchmark_ms_dense_%s_%s'
                         %(args.device, time.strftime("%Y%m%d")))
         else:
             logfile = args.logfile
@@ -223,45 +222,40 @@ def main(_):
             else:
                 optimizer[i] = 0
 
-        # Run benchmarks
+        # Run benchmarks for TF mirroredStrategy
         for rep in range(args.repetitions):
-            print("Benchmarking fully connected, starting repetition %d" %(rep+1))
+            print("Benchmarking FC layers (Mirrored Strategy), starting repetition %d" %(rep+1))
+
             for i in range(args.num_val):
-                dense = benchmark_dense.dense_layer(
+                backprop = True
+                if optimizer[i]==0:
+                    backprop = False
+                dense = benchmark_dense_ms.dense_layer(
                         dim_input[i],
                         dim_output[i],
                         batchsize[i],
                         precision[i],
                         activation_list[activation_fct[i]],
                         optimizer_list[optimizer[i]],
-                        devlist)
-
-                if optimizer[i]==0:
-                    benchmark_op, benchmark_graph = dense.create_benchmark_op()
-                else:
-                    benchmark_op, benchmark_graph = dense.create_benchmark_op_with_backprop()
-
-                bm_dense = run_benchmark.benchmark(
-                        benchmark_op,
+                        strategy,
                         args.iter_warmup,
                         args.iter_benchmark,
-                        benchmark_graph)
-
+                        backprop)
                 try:
-                    timeUsed[i,rep] =  bm_dense.run_benchmark()
+                    timeUsed[i,rep] = dense.run_benchmark()
                 except:
                     print('Error: Out of GPU memory')
                     timeUsed[i,rep] = None
-
-                if (i+1)%100==0:
+                    
+                if (i+1)%10==0:
                     print("Iteration %d / %d: Finished dense layer %d / %d "
-                            "(%.2f sec): t = %.3f ms \n"
-                            %(rep+1,
-                            args.repetitions,
-                            i+1,
-                            args.num_val,
-                            time.time()-tprint,
-                            timeUsed[i,rep]))
+                        "(%.2f sec): t = %.3f ms \n"
+                        %(rep+1,
+                        args.repetitions,
+                        i+1,
+                        args.num_val,
+                        time.time()-tprint,
+                        timeUsed[i,rep]))
 
         # Generate dataframe and save results
         print("Generating dataframe and saving results")
@@ -272,7 +266,7 @@ def main(_):
                 'precision': precision,
                 'activation_fct': activation_fct,
                 'optimizer': optimizer,
-                'gpu': gpu_index,
+                'gpu_count': strategy.num_replicas_in_sync,
                 'timeUsed_median': np.median(timeUsed,1),
                 'timeUsed_min': np.min(timeUsed,1),
                 'timeUsed_max': np.max(timeUsed,1),

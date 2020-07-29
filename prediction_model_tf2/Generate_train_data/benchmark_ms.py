@@ -118,6 +118,7 @@ def main(_):
         activation_fct = np.random.randint(0,4,args.num_val)
         use_bias = np.random.choice([True,False],args.num_val)
         timeUsed = np.zeros([args.num_val,args.repetitions])
+        runtime_median = np.zeros([args.num_val,args.repetitions])
 
         tprint = time.time()
         for i in range(args.num_val):
@@ -156,10 +157,10 @@ def main(_):
                         backprop)
                 
                 try:
-                    timeUsed[i,rep] = conv.run_benchmark()
+                    timeUsed[i,rep], runtime_median[i,rep] = conv.run_benchmark()
                 except:
                     print('Error: Out of GPU memory')
-                    timeUsed[i,rep] = None
+                    timeUsed[i,rep], runtime_median[i,rep] = None
 
                 if (i+1)%10==0:
                     print("Iteration %d / %d: Finished convolution %d / %d "
@@ -190,7 +191,8 @@ def main(_):
                 'timeUsed_median': np.median(timeUsed,1),
                 'timeUsed_min': np.min(timeUsed,1),
                 'timeUsed_max': np.max(timeUsed,1),
-                'timeUsed_std': np.std(timeUsed,1)})
+                'timeUsed_std': np.std(timeUsed,1),
+                'runtime_median': np.median(runtime_median,1)})
         
         df_results.to_pickle('%s.pkl' %logfile)
         np.save('%s.npy' %logfile, timeUsed)

@@ -108,5 +108,5 @@ class convolution(object):
         times = time_callback.times
         times = times[1:len(times)]  # remove time of the first epoch (overhead)
 
-        return np.mean(times)
+        return np.mean(times), np.median(times)
        

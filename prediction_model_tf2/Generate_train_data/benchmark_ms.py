@@ -36,7 +36,7 @@ parser.add_argument('--logfile', type=str, default='',
                     help='Text file to store results')
 parser.add_argument('--device', type=str, default='',
                     help='Device name as appearing in logfile')
-parser.add_argument('--iter_benchmark', type=int, default=30,
+parser.add_argument('--iter_benchmark', type=int, default=31,
                     help='Number of iterations for benchmark')
 parser.add_argument('--iter_warmup', type=int, default=5,
                     help='Number of iterations for warm-up')
@@ -154,6 +154,7 @@ def main(_):
                         args.iter_warmup,
                         args.iter_benchmark,
                         backprop)
+                
                 try:
                     timeUsed[i,rep] = conv.run_benchmark()
                 except:

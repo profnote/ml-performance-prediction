@@ -4,6 +4,17 @@ import tensorflow as tf
 import numpy as np
 import time
 
+        
+class TimeHistory(tf.keras.callbacks.Callback):
+    def on_train_begin(self, logs={}):
+        self.times = []
+
+    def on_epoch_begin(self, batch, logs={}):
+        self.epoch_time_start = time.time()
+
+    def on_epoch_end(self, batch, logs={}):
+        self.times.append(time.time() - self.epoch_time_start)
+                
 
 class convolution(object):
     """Class for gerenating the benchmark operations"""
@@ -30,7 +41,7 @@ class convolution(object):
             args: Input arguments
 
         """
-
+        
         self.matsize = matsize
         self.kernelsize = kernelsize
         self.channels_in = channels_in
@@ -46,23 +57,6 @@ class convolution(object):
         self.iterations_warmup = iterations_warmup
         self.iterations_benchmark = iterations_benchmark
         self.backprop = backprop
-
-    '''
-    def create_model(self):
-        print("create model!")
-        input_shape = (self.matsize, self.matsize, self.channels_in)
-        act = eval(self.activation_fct)
-        model = tf.keras.Sequential([
-            tf.keras.layers.Conv2D(
-            filters=self.channels_out,
-            kernel_size=(self.kernelsize,self.kernelsize),
-            strides=(self.strides, self.strides),
-            padding=self.padding,
-            activation = act,
-            use_bias=self.use_bias,
-            input_shape=input_shape)])
-            
-        return model'''
 
     
     def run_benchmark(self):
@@ -87,8 +81,6 @@ class convolution(object):
                     self.channels_out], dtype=datatype))
         
         with self.strategy.scope():
-            #model = self.create_model()
-            
             input_shape = (self.matsize, self.matsize, self.channels_in)
             act = eval(self.activation_fct)
             model = tf.keras.Sequential([
@@ -107,13 +99,14 @@ class convolution(object):
         
         train_dataset = tf.data.Dataset.from_tensor_slices((train_images, target)).batch(GLOBAL_BATCH_SIZE)
 
-        # Fit model and record training time
-        # Warm-up run
-        model.fit(train_dataset, epochs=self.iterations_warmup, verbose=0)
-        # Benchmark run
-        t = time.time()
-        model.fit(train_dataset, epochs=self.iterations_benchmark, verbose=1)
-        timeUsed = (time.time() - t)/self.iterations_benchmark * 1000
         
-        return timeUsed
+                
+        # Fit model and record training time
+        time_callback = TimeHistory()
+        model.fit(train_dataset, epochs=self.iterations_benchmark, callbacks=[time_callback], verbose=0)
+
+        times = time_callback.times
+        times = times[1:len(times)]  # remove time of the first epoch (overhead)
+
+        return np.mean(times)
        

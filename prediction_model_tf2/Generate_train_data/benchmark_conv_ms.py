@@ -47,11 +47,13 @@ class convolution(object):
         self.iterations_benchmark = iterations_benchmark
         self.backprop = backprop
 
-
+    '''
     def create_model(self):
+        print("create model!")
         input_shape = (self.matsize, self.matsize, self.channels_in)
         act = eval(self.activation_fct)
-        model = tf.keras.Sequential([tf.keras.layers.Conv2D(
+        model = tf.keras.Sequential([
+            tf.keras.layers.Conv2D(
             filters=self.channels_out,
             kernel_size=(self.kernelsize,self.kernelsize),
             strides=(self.strides, self.strides),
@@ -59,7 +61,8 @@ class convolution(object):
             activation = act,
             use_bias=self.use_bias,
             input_shape=input_shape)])
-        return model
+            
+        return model'''
 
     
     def run_benchmark(self):
@@ -84,7 +87,19 @@ class convolution(object):
                     self.channels_out], dtype=datatype))
         
         with self.strategy.scope():
-            model = self.create_model()
+            #model = self.create_model()
+            
+            input_shape = (self.matsize, self.matsize, self.channels_in)
+            act = eval(self.activation_fct)
+            model = tf.keras.Sequential([
+            tf.keras.layers.Conv2D(
+                filters=self.channels_out,
+                kernel_size=(self.kernelsize,self.kernelsize),
+                strides=(self.strides, self.strides),
+                padding=self.padding,
+                activation = act,
+                use_bias=self.use_bias,
+                input_shape=input_shape)])
             optimizer = None 
             if self.backprop:
                 optimizer = eval('tf.compat.v1.train.%s' % self.opt)
@@ -97,7 +112,8 @@ class convolution(object):
         model.fit(train_dataset, epochs=self.iterations_warmup, verbose=0)
         # Benchmark run
         t = time.time()
-        model.fit(train_dataset, epochs=self.iterations_benchmark, verbose=0)
+        model.fit(train_dataset, epochs=self.iterations_benchmark, verbose=1)
         timeUsed = (time.time() - t)/self.iterations_benchmark * 1000
+        
         return timeUsed
        

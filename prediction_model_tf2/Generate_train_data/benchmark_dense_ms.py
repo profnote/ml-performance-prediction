@@ -5,6 +5,17 @@ import numpy as np
 import time
 
 
+class TimeHistory(tf.keras.callbacks.Callback):
+    def on_train_begin(self, logs={}):
+        self.times = []
+
+    def on_epoch_begin(self, batch, logs={}):
+        self.epoch_time_start = time.time()
+
+    def on_epoch_end(self, batch, logs={}):
+        self.times.append((time.time() - self.epoch_time_start) * 1000)
+        
+
 class dense_layer(object):
     """Class for gerenating the benchmark operations"""
 
@@ -40,15 +51,6 @@ class dense_layer(object):
         self.iterations_benchmark = iterations_benchmark
         self.backprop = backprop
 
-
-    def create_model(self):
-        act = eval(self.activation_fct)
-        model = tf.keras.Sequential([tf.keras.layers.Dense(
-            units=self.dim_output,
-            kernel_initializer=tf.compat.v1.ones_initializer(),
-            activation = act)])
-        return model
-
         
     def run_benchmark(self):
         """create and run a tensorflow mirrorStrategy
@@ -66,7 +68,11 @@ class dense_layer(object):
         target = tf.Variable(tf.ones([self.batchsize, self.dim_output], dtype=datatype))
 
         with self.strategy.scope():
-            model = self.create_model()
+            act = eval(self.activation_fct)
+            model = tf.keras.Sequential([tf.keras.layers.Dense(
+                units=self.dim_output,
+                kernel_initializer=tf.compat.v1.ones_initializer(),
+                activation = act)])
             optimizer = None
             if self.backprop:
                 optimizer = eval('tf.compat.v1.train.%s' % self.opt)
@@ -75,10 +81,10 @@ class dense_layer(object):
         train_dataset = tf.data.Dataset.from_tensor_slices((VecIn, target)).batch(GLOBAL_BATCH_SIZE)
 
         # Fit model and record training time
-        # Warm-up run
-        model.fit(train_dataset, epochs=self.iterations_warmup, verbose=0)
-        # Benchmark run
-        t = time.time()
-        model.fit(train_dataset, epochs=self.iterations_benchmark, verbose=0)
-        timeUsed = (time.time() - t)/self.iterations_benchmark * 1000
-        return timeUsed
+        tf.keras.backend.clear_session()
+        time_callback = TimeHistory()
+        model.fit(train_dataset, epochs=self.iterations_benchmark, callbacks=[time_callback], verbose=0)
+
+        times = time_callback.times
+        times = times[1:len(times)]  # remove time of the first epoch (overhead)
+        return np.mean(times), np.median(times)

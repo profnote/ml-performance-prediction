@@ -13,7 +13,7 @@ class TimeHistory(tf.keras.callbacks.Callback):
         self.epoch_time_start = time.time()
 
     def on_epoch_end(self, batch, logs={}):
-        self.times.append(time.time() - self.epoch_time_start)
+        self.times.append((time.time() - self.epoch_time_start) * 1000)
                 
 
 class convolution(object):
@@ -99,14 +99,14 @@ class convolution(object):
         
         train_dataset = tf.data.Dataset.from_tensor_slices((train_images, target)).batch(GLOBAL_BATCH_SIZE)
 
-        
                 
         # Fit model and record training time
+        tf.keras.backend.clear_session()
         time_callback = TimeHistory()
         model.fit(train_dataset, epochs=self.iterations_benchmark, callbacks=[time_callback], verbose=0)
 
         times = time_callback.times
         times = times[1:len(times)]  # remove time of the first epoch (overhead)
-
+        
         return np.mean(times), np.median(times)
        

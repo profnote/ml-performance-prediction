@@ -88,7 +88,8 @@ def main(_):
             'None',
             'tf.nn.relu',
             'tf.nn.tanh',
-            'tf.nn.sigmoid']
+            'tf.nn.sigmoid',
+            'tf.nn.softmax']
 
 
     strategy = tf.distribute.MirroredStrategy()
@@ -115,7 +116,7 @@ def main(_):
         optimizer = np.zeros(args.num_val,dtype=np.int32)
         precision = (np.ones(args.num_val)*32).astype(int) # np.random.choice([16,32],args.num_val)
         padding = np.random.randint(0,2,args.num_val)
-        activation_fct = np.random.randint(0,4,args.num_val)
+        activation_fct = np.random.randint(0,len(activation_list),args.num_val)
         use_bias = np.random.choice([True,False],args.num_val)
         timeUsed = np.zeros([args.num_val,args.repetitions])
         runtime_median = np.zeros([args.num_val,args.repetitions])
@@ -175,6 +176,7 @@ def main(_):
 
         # Generate dataframe and save results
         print("Generating dataframe and saving results")
+        print(np.median(timeUsed,1))
         df_results = pd.DataFrame({
                 'batchsize': batchsize, # batchsize per replica
                 'matsize': matsize,
@@ -208,14 +210,14 @@ def main(_):
 
         # Set random parameters
         batchsize = np.random.randint(1,65,args.num_val)
-        dim_input = np.random.randint(1,4096,args.num_val)
-        dim_output = np.random.randint(1,4096,args.num_val)
+        dim_input = np.random.randint(1,4097,args.num_val)
+        dim_output = np.random.randint(1,1025,args.num_val)
         precision = (np.ones(args.num_val)*32).astype(int) # np.random.choice([16,32],args.num_val)
-        activation_fct = np.random.randint(0,4,args.num_val)
+        activation_fct = np.random.randint(0,len(activation_list),args.num_val)
         optimizer = np.zeros(args.num_val,dtype=np.int32)
         gpu_index = np.arange(args.num_val)%(len(devlist))
-
         timeUsed = np.zeros([args.num_val,args.repetitions])
+        runtime_median = np.zeros([args.num_val,args.repetitions])
 
         tprint = time.time()
 
@@ -245,10 +247,10 @@ def main(_):
                         args.iter_benchmark,
                         backprop)
                 try:
-                    timeUsed[i,rep] = dense.run_benchmark()
+                    timeUsed[i,rep], runtime_median[i,rep] = dense.run_benchmark()
                 except:
                     print('Error: Out of GPU memory')
-                    timeUsed[i,rep] = None
+                    timeUsed[i,rep], runtime_median[i,rep] = None
                     
                 if (i+1)%10==0:
                     print("Iteration %d / %d: Finished dense layer %d / %d "
@@ -273,7 +275,8 @@ def main(_):
                 'timeUsed_median': np.median(timeUsed,1),
                 'timeUsed_min': np.min(timeUsed,1),
                 'timeUsed_max': np.max(timeUsed,1),
-                'timeUsed_std': np.std(timeUsed,1)})
+                'timeUsed_std': np.std(timeUsed,1),
+                'runtime_median': np.median(runtime_median,1)})
 
         df_results.to_pickle('%s.pkl' %logfile)
         np.save('%s.npy' %logfile, timeUsed)

@@ -26,7 +26,7 @@ class convolution(object):
             args: Input arguments
             devlist: List of GPUs / CPUs (list)
         """
-
+        
         self.matsize = matsize
         self.kernelsize = kernelsize
         self.channels_in = channels_in
@@ -39,6 +39,7 @@ class convolution(object):
         self.devlist = devlist
         self.activation_fct = activation_fct
         self.opt = optimizer
+        self.devlist = devlist
 
 
     def create_benchmark_op(self):

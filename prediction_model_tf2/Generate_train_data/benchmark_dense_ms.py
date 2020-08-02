@@ -39,7 +39,7 @@ class dense_layer(object):
             precision: bit depth (16/32/64)
             optimizer: (string)
         """
-
+        
         self.dim_input = dim_input
         self.dim_output = dim_output
         self.batchsize = batchsize

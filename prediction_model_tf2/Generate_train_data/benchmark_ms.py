@@ -209,9 +209,9 @@ def main(_):
             logfile = args.logfile
 
         # Set random parameters
-        batchsize = np.random.randint(1,65,args.num_val)
+        batchsize = 2**np.random.randint(1,10,args.num_val)
         dim_input = np.random.randint(1,4097,args.num_val)
-        dim_output = np.random.randint(1,1025,args.num_val)
+        dim_output = np.random.randint(1,11,args.num_val)
         precision = (np.ones(args.num_val)*32).astype(int) # np.random.choice([16,32],args.num_val)
         activation_fct = np.random.randint(0,len(activation_list),args.num_val)
         optimizer = np.zeros(args.num_val,dtype=np.int32)

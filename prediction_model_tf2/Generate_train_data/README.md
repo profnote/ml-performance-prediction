@@ -24,11 +24,11 @@ with the following optional arguments:
 --backprop_ratio (Ratio of iterations with backward pass ([0..1])
 --num_gpu (Number of GPUs to use, default 1)<br/>
 --devlist (List of devices to use, overwrites num_gpu if set, default '')<br/>
---num_val (Number of results to compute)
---logfile (Name of output file)
---device (Name of device to appear on logfile)
---iter_benchmark (Number of iterations for benchmark)
---iter_warmup (Number of iterations for warm-up)
+--num_val (Number of results to compute)  
+--logfile (Name of output file)  
+--device (Name of device to appear on logfile)  
+--iter_benchmark (Number of iterations for benchmark)  
+--iter_warmup (Number of iterations for warm-up)  
 --repetitions (Number of repetitions of the same experiment)  
 
 For TF MirroredSTrategy, run

@@ -31,7 +31,7 @@ with the following optional arguments:
 --iter_warmup (Number of iterations for warm-up)  
 --repetitions (Number of repetitions of the same experiment)  
 
-For TF MirroredSTrategy, run
+For TF MirroredStrategy, run
 ```bash
 python benchmark.py
 ```

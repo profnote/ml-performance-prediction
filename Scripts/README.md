@@ -1,5 +1,6 @@
 # Scripts
-A collection of python scripts we used to gather runtime data of various models
+A collection of python scripts we used to gather actual runtimes of various models.
+Some of them utilize tensorflow datasets, so be sure to install tensorflow_datasets==2.1.0 before running.
 
 ## Single GPU
 * **mnist_single.py** - Script to get actual epoch runtimes, model for MNIST dataset

@@ -33,6 +33,6 @@ with the following optional arguments:
 
 For TF MirroredStrategy, run
 ```bash
-python benchmark.py
+python benchmark_ms.py
 ```
 with the same optional arguments, except for  ```--num_gpu``` which now becomes the number of GPUs to use with TF mirroredStrategy (default=2)
